@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TranslateTube - تعلم اللغات عبر اليوتيوب</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: white; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
+        .container { max-width: 900px; width: 100%; }
+        h1 { color: #00ff00; text-align: center; }
+        
+        .video-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        /* طبقة الترجمة كما في الصورة */
+        .overlay-container { position: absolute; bottom: 30px; left: 20px; right: 20px; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
+        .box-group { display: flex; flex-direction: column; }
+        .label { font-size: 14px; margin-bottom: 4px; color: #ccc; font-weight: bold; }
+        .box { padding: 12px 20px; border-radius: 8px; font-size: 20px; font-weight: 600; width: fit-content; max-width: 90% ; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        
+        .original { background-color: #00ff00; color: #000; } /* المربع الأخضر */
+        .translation { background-color: #00008b; color: #fff; } /* المربع الأزرق الداكن */
+
+        .controls { margin-top: 25px; display: flex; gap: 10px; width: 100%; }
+        input { flex: 1; padding: 12px; border-radius: 5px; border: none; font-size: 16px; }
+        button { padding: 12px 25px; background-color: #00ff00; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #00cc00; }
+        #status { margin-top: 10px; color: #888; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>TranslateTube 📺</h1>
+        
+        <div class="video-wrapper">
+            <div id="player"></div>
+            
+            <div class="overlay-container">
+                <div class="box-group">
+                    <span class="label">اللغة الأصلية للفيديو</span>
+                    <div id="originalText" class="box original">بانتظار تحليل الفيديو...</div>
+                </div>
+                <div class="box-group">
+                    <span class="label">اللغة الترجمة</span>
+                    <div id="translatedText" class="box translation">Warten على الترجمة...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <input type="text" id="videoUrl" placeholder="ضع رابط فيديو يوتيوب هنا...">
+            <button onclick="loadAndAnalyze()">تحليل وترجمة</button>
+        </div>
+        <div id="status"></div>
+    </div>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+
+        // مفتاح الـ API الخاص بك
+        const API_KEY = "AIzaSyACzULF6NC0WFOLbC2d6V-_5CyPv4PuJCw";
+        const genAI = new GoogleGenerativeAI(API_KEY);
+
+        window.loadAndAnalyze = async function() {
+            const url = document.getElementById('videoUrl').value;
+            const status = document.getElementById('status');
+            const videoId = extractVideoID(url);
+
+            if (!videoId) {
+                alert("يرجى إدخال رابط يوتيوب صحيح");
+                return;
+            }
+
+            // 1. تحميل الفيديو في المشغل
+            document.getElementById('player').innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay"></iframe>`;
+            
+            status.innerText = "جاري الاتصال بـ Gemini لتحليل الفيديو...";
+
+            try {
+                // 2. الاتصال بـ Gemini 1.5 Flash (الأسرع للفيديو)
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                
+                // برومبت لطلب الجملة والترجمة
+                const prompt = `Analyze this YouTube video (ID: ${videoId}). 
+                Extract one important educational sentence in Arabic.
+                Translate it to German.
+                Return ONLY a JSON object like this: {"ar": "الجملة العربية", "de": "الجملة الألمانية"}`;
+
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const data = JSON.parse(response.text().replace(/```json|```/g, ""));
+
+                // 3. تحديث المربعات الملونة
+                document.getElementById('originalText').innerText = data.ar;
+                document.getElementById('translatedText').innerText = data.de;
+                status.innerText = "تمت الترجمة بنجاح!";
+
+            } catch (error) {
+                console.error(error);
+                status.innerText = "حدث خطأ أثناء التحليل. تأكد من أن الفيديو متاح للتضمين.";
+            }
+        };
+
+        function extractVideoID(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length == 11) ? match[2] : null;
+        }
+    </script>
+</body>
+</html>
