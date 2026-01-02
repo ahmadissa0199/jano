@@ -1,5 +1,5 @@
 {
-  "name": "Jano: Neural Video Translation",
+  "name": "TranslateTube",
   "description": "An AI-powered video learning platform that provides sentence-by-sentence translation and linguistic overlays for language learners.",
   "requestFramePermissions": []
 }
