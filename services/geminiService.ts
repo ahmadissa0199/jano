@@ -5,7 +5,7 @@ import { GeminiResponse } from "../types";
 // Always initialize GoogleGenAI with a named parameter for apiKey using process.env.API_KEY.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-const SYSTEM_INSTRUCTION = `You are the Jano Neural Translation Engine. Your task is to transcribe and translate the ENTIRE video content with extreme granularity.
+const SYSTEM_INSTRUCTION = `You are the Translate-Tube Neural Translation Engine. Your task is to transcribe and translate the ENTIRE video content with extreme granularity.
 
 Rules for Processing:
 1. SENTENCE-BY-SENTENCE: Do not group multiple sentences together. Each segment must represent a single short sentence or phrase. This ensures the text size remains small and readable.

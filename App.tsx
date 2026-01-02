@@ -209,7 +209,7 @@ const App: React.FC = () => {
           </div>
           <div>
             <h1 className="text-4xl font-black bg-gradient-to-r from-blue-400 to-emerald-500 bg-clip-text text-transparent">
-              Jano
+              Translate-Tube
             </h1>
             <p className="text-slate-400 font-bold tracking-[0.2em] text-[10px] uppercase">Neural Sentence Translation</p>
           </div>
@@ -353,7 +353,7 @@ const App: React.FC = () => {
       </main>
 
       <footer className="mt-auto py-12 border-t border-slate-800/50 flex flex-col md:flex-row items-center justify-between gap-6 opacity-40">
-         <p className="text-[10px] font-black uppercase tracking-[0.5em]">Jano &bull; Neural Translation Engine</p>
+         <p className="text-[10px] font-black uppercase tracking-[0.5em]">Translate-Tube &bull; Neural Translation Engine</p>
          <div className="flex gap-8 items-center">
             <span className="text-[10px] font-black uppercase tracking-widest bg-slate-800 px-4 py-2 rounded-full border border-slate-700">Gemini 3.0 Flash</span>
             <span className="text-[10px] font-black uppercase tracking-widest text-blue-500">Sentence Tracking Active</span>
